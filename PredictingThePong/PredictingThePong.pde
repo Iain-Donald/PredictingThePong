@@ -57,6 +57,7 @@ void draw(){
         ballYSpeed = -ballYSpeed;
       } else {
         iainsGradient(0, 0, 1000, 1000, white, red, false);
+        score = 0;
       }
     }
   } else if (ballY < 0 + ballRadius){
@@ -70,7 +71,7 @@ void draw(){
   
   fill(0);
   textSize(64);
-  text(str(score), 40, 60);
+  text("Score: " + str(score), 40, 60);
   
   ballYSpeed += gravity;
  
