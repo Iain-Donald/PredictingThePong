@@ -1,91 +1,151 @@
-
+// ball
 int ballRadius = 20;
-
 float ballX = 500;
 float ballY = 200;
-
 float ballXSpeed, ballYSpeed;
+
+// physical properties
 float gravity = 0.1634;
 float energyMult = 1.1;
 float takeEnergyMult = 0.95;
 
+// general color
 color green, red, white;
 
+// difficulty
 int difficulty = 15;
 
+// paddle
 int paddleX = 0;
 color paddleColor;
 
+// score
 int score = 0;
+
+// frame counter for time
 int frameCounter = 0;
 
+// game states
 boolean selectPosition = false;
 boolean gameStart = true;
 boolean gameOver = false;
 
+// font
 PFont font;
 
 void setup(){
+  // basic properties
   size(1000, 1000, P3D);
   background(100);
   frameRate(60);
   font = createFont("Consolas", 24);
   
-  green = color(0, 254, 0);
+  // assign colors
+  green = color(20, 200, 25);
   red = color(254, 0, 0);
   white = color(254, 254, 254);
   paddleColor = color(20, 200, 25);
   
+  // initial ball direction
   ballXSpeed = random(-difficulty, difficulty);
   ballYSpeed = random(1, difficulty/2);
-  String[] fontList = PFont.list();
-printArray(fontList);
+  
+  /*String[] fontList = PFont.list(); // list fonts
+  printArray(fontList);*/
 }
 
 void draw(){
+  // screen reset
   background(254);
   lights();
+  
+  // set font
   textFont(font);
   textSize(24);
   
+  // 'CLICK TO MOVE PADDLE' game state
   if(selectPosition){
+    //count time
     frameCounter ++;
-    // player paddle
-    paddleColor = color(20, 200, 25);
+    
+    // color green and draw player paddle
+    paddleColor = green;
     fill(paddleColor);
     rect(paddleX, 900, 150, 20);
-    if(mousePressed){
-      paddleX = mouseX - 75;
-    }
+    
+    // click to move paddle
+    if(mousePressed) paddleX = mouseX - 75;
+    
+    // times up
     if(frameCounter > 120) {
       selectPosition = false;
       frameCounter = 0;
     }
+    
+    // draw text
     text("CLICK TO MOVE PADDLE", 12, 72);
-  } else {
-    paddleColor = color(254, 0, 0);
-      if(ballY > 900 - (ballRadius * 1.5) && ballY < 950){
+    
+    
+  } else { // 'ball moving' game state
+    
+    // set paddle color to red
+    paddleColor = red;
+    
+      // if is at paddle height
+      if(ballY > 900 - (ballRadius + ballYSpeed) && ballY < 950){
+        
+        // end initial environment properties
         gameStart = false;
+        
+        // if ball contacts paddle
         if(ballX < paddleX + 150 && ballX > paddleX){
+          
+          // screen is green for a point
           iainsGradient(0, 0, 1000, 1000, white, green, false); // gradient on point
+          
+          // enable 'CLICK TO MOVE PADDLE' game state
           selectPosition = true;
+          
+          // increment score
           score ++;
+          
+          // target ball speed
+          
+            // Y axis
           print("\nEnergy: ");
           if(ballYSpeed < difficulty * 1.3) {
-            print("add");
+            print("add Y, ");
             ballYSpeed *= energyMult;
           } else {
-            print("take");
+            print("take Y, ");
             ballYSpeed *= takeEnergyMult;
           }
+          
+            // X axis (plus random to reduce loops)
+          if(ballXSpeed < difficulty * 1.3) {
+            print("add X");
+            ballXSpeed *= energyMult + random(0.01, 0.1);
+          } else {
+            print("take X");
+            ballXSpeed *= takeEnergyMult;
+          }
+          
+          // change ball direction
           ballYSpeed = -ballYSpeed;
-        } else {
+          
+        } else { // if ball misses paddle
+        
+          // 'game over' gamestate
           gameOver = true;
         }
-      } else if (ballY < 0 + ballRadius){
+        
+      } else if (ballY < ballRadius){ // if ball is at top of screen
+      
+      // change ball direction
       ballYSpeed = -ballYSpeed;
     }
-  
+    
+    
     if(ballX > 1000 - ballRadius || ballX < 0 + ballRadius){
       ballXSpeed = -ballXSpeed;
     }
@@ -94,7 +154,7 @@ void draw(){
     ballY += ballYSpeed;
     if(gameStart) {
       paddleX = mouseX - 75;
-      paddleColor = color(20, 200, 25);
+      paddleColor = green;
     }
     
     if(gameOver) {
@@ -108,10 +168,6 @@ void draw(){
     fill(paddleColor);
     rect(paddleX, 900, 150, 20);
   }
-  
-  // gradient on loss
-  
-  //print("\nG: " + gravity + "  ballYSpeed: " + ballYSpeed);
   
   fill(0);
   text("Score: " + str(score), 12, 36);
@@ -137,7 +193,7 @@ void draw(){
   }
 }
 
-
+// basic x or y-axis gradient
 void iainsGradient(int x, int y, int w, int h, color c1, color c2, boolean axis){
   noFill();
   color currentColor = c1;
