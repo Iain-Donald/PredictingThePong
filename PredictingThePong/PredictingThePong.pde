@@ -169,17 +169,25 @@ void draw(){
     rect(paddleX, 900, 150, 20);
   }
   
+  // score text
   fill(0);
   text("Score: " + str(score), 12, 36);
   
+  // ~ design line ~
   stroke(0);
   line(0, 42, 1000, 42);
+  
+  // disable stroke for sphere
   noStroke();
   
+  // move ball to X & Y position
   translate(ballX, ballY, 0);
+  
+  // set color and draw ball
   fill(20, 200, 200);
   sphere(ballRadius);
   
+  // restart button
   if(keyPressed){
       if(key == 'r'){
          ballY = 200;
@@ -198,9 +206,17 @@ void iainsGradient(int x, int y, int w, int h, color c1, color c2, boolean axis)
   noFill();
   color currentColor = c1;
   if (axis){ // x axis
+  
+    // loop for lines
     for(int i = x; i < x + w; i++){
+      
+      // find current line color of i percentage of width
       currentColor = lerpColor(c1, c2, /*(((100.0/float(w))/100.0) * i) - 1)*/map(i, x, x + w, 0, 1));
+      
+      // set line color and transparency
       stroke(currentColor, 0.5);
+      
+      // draw line
       line(i, y, i, y + h);
     }
   } else { // y axis
